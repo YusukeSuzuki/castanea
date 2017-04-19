@@ -1,4 +1,5 @@
 import tensorflow as tf
+from castanea.utils import device_or_none
 
 def normalize_weight_for_conv2d(w, g_init=1.0, var_device='/cpu:0'):
     '''
@@ -8,9 +9,9 @@ def normalize_weight_for_conv2d(w, g_init=1.0, var_device='/cpu:0'):
     @param var_device device name for variable placement
     @return normalized weight
     '''
-    with tf.variable_scope('weight_normalize'):
+    with tf.variable_scope(None, default_name='weight_normalize'):
         shape = w.get_shape().as_list()
-        with tf.device(var_device):
+        with device_or_none(var_device):
             g = tf.get_variable(name='g', shape=[1,1,1,shape[3]],
                 initializer=tf.constant_initializer(g_init))
 
@@ -25,9 +26,9 @@ def normalize_weight_for_conv2d_transpose(w, g_init=1.0, var_device='/cpu:0'):
     @param var_device device name for variable placement
     @return normalized weight
     '''
-    with tf.variable_scope('weight_normalize'):
+    with tf.variable_scope(None, default_name='weight_normalize'):
         shape = w.get_shape().as_list()
-        with tf.device(var_device):
+        with device_or_none(var_device):
             g = tf.get_variable(name='g', shape=[1,1,shape[2],1],
                 initializer=tf.constant_initializer(g_init))
 
@@ -41,10 +42,10 @@ def normalize_weight_for_linear(w, g_init=1.0, var_device='/cpu:0'):
     @param var_device device name for variable placement
     @return normalized weight
     '''
-    with tf.variable_scope('weight_normalize'):
+    with tf.variable_scope(None, default_name='weight_normalize'):
         shape = w.get_shape().as_list()
-        with tf.device(var_device):
+        with device_or_none(var_device):
             g = tf.get_variable(name='g', shape=[1,shape[1]],
                 initializer=tf.constant_initializer(math.log(stddev)))
-        return = g * tf.nn.l2_normalize(w, [0]) 
+        return g * tf.nn.l2_normalize(w, [0]) 
 
