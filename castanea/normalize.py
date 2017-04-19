@@ -1,6 +1,6 @@
 import tensorflow as tf
 
-def normalize_weight_for_conv2d(w, g_init, var_device='/cpu:0'):
+def normalize_weight_for_conv2d(w, g_init=1.0, var_device='/cpu:0'):
     '''
     weight normalization for conv2d
 
@@ -17,7 +17,7 @@ def normalize_weight_for_conv2d(w, g_init, var_device='/cpu:0'):
         return g * tf.nn.l2_normalize(w, [0,1,2]) 
 
 
-def normalize_weight_for_conv2d_transpose(w, g_init, var_device='/cpu:0'):
+def normalize_weight_for_conv2d_transpose(w, g_init=1.0, var_device='/cpu:0'):
     '''
     weight normalization for conv2d transpose
 
@@ -33,7 +33,7 @@ def normalize_weight_for_conv2d_transpose(w, g_init, var_device='/cpu:0'):
 
         return g * tf.nn.l2_normalize(w, [0,1,3]) 
 
-def normalize_weight_for_linear(w, g_init, var_device='/cpu:0'):
+def normalize_weight_for_linear(w, g_init=1.0, var_device='/cpu:0'):
     '''
     weight normalization for linear layer
 
