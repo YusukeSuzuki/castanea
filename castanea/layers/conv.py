@@ -10,7 +10,7 @@ def conv2d(
 
     paramter = parameter or LayerParameter()
 
-    with tf.variable_scope(None, default_name='conv2d'):
+    with tf.variable_scope(None, default_name='conv2d', reuse=None):
         x_shape = x.get_shape().as_list()
 
         with device_or_none(parameter.var_device):
