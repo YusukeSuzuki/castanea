@@ -8,7 +8,7 @@ from castanea.layers.parameter import LayerParameter
 from castanea.utils import device_or_none
 
 def linear(x, shape, parameter=None):
-    paramter = parameter or LayerParameter()
+    parameter = parameter or LayerParameter()
 
     with tf.variable_scope(None, default_name='linear'):
         x_shape = x.get_shape().as_list()
