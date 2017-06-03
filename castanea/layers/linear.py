@@ -28,7 +28,7 @@ def linear(x, shape, parameter=None):
 
         out = tf.matmul(x, weight)
 
-        if paramter.with_bias:
+        if parameter.with_bias:
             with device_or_none(parameter.var_device):
                 bias = tf.get_variable(
                     shape=[out_units], initializer=tf.zeros_initializer(), name='bias')
