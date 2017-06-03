@@ -46,6 +46,6 @@ def normalize_weight_for_linear(w, g_init=1.0, var_device='/cpu:0'):
         shape = w.get_shape().as_list()
         with device_or_none(var_device):
             g = tf.get_variable(name='g', shape=[1,shape[1]],
-                initializer=tf.constant_initializer(math.log(stddev)))
+                initializer=tf.constant_initializer(g_init))
         return g * tf.nn.l2_normalize(w, [0]) 
 

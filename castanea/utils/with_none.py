@@ -1,3 +1,4 @@
+import tensorflow as tf
 
 class WithNone:
     def __enter__(self): pass

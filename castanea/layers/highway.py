@@ -11,7 +11,7 @@ def highway(y, x, kernel_height, kernel_width=None, var_device='/cpu:0'):
     @param kernel_height gate convolution kernel height
     @param carry_bias
     '''
-    with tf.variable_scope('highway'):
+    with tf.variable_scope(None, default_name='highway'):
         kernel_width = kernel_width or kernel_height
         x_shape = x.get_shape().as_list()
         y_shape = y.get_shape().as_list()

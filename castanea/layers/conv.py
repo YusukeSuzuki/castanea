@@ -4,6 +4,15 @@ from castanea.normalize import *
 from castanea.layers.parameter import LayerParameter
 from castanea.utils import device_or_none
 
+def bn_beta_gamma(target, beta_name=None, gamma_name=None, var_device=None):
+    """create beta,gamma variable for batch_normalization"""
+    with device_or_none(var_device):
+        return (
+            tf.get_variable(beta_name, shape=target.get_shape().as_list()[-1],
+                initializer=tf.zeros_initializer()), 
+            tf.get_variable(gamma_name, shape=target.get_shape().as_list()[-1],
+                initializer=tf.ones_initializer()) )
+
 def conv2d(
         x, kernel_height, kernel_width, out_channels,
         strides=[1,1,1,1], parameter=None):
@@ -31,6 +40,11 @@ def conv2d(
                     shape=[out_channels], initializer=tf.zeros_initializer(), name='bias')
 
             out = tf.nn.bias_add(out, bias)
+
+        if paramter.with_batch_normalize:
+            mean, var = tf.nn.moments(out, [0,1,2])
+            beta, gamma = bn_beta_gamma(out,'beta', 'gamma', parameter.var_device)
+            out = tf.nn.batch_normalization(out, mean, var, beta, gamma, 1e-6)
 
         if parameter.rectifier:
             out = parameter.rectifier(out)
@@ -65,6 +79,11 @@ def conv2d_transpose(
                     shape=[out_channels], initializer=tf.zeros_initializer(), name='bias')
 
             out = tf.nn.bias_add(out, bias)
+
+        if paramter.with_batch_normalize:
+            mean, var = tf.nn.moments(out, [0,1,2])
+            beta, gamma = bn_beta_gamma(out,'beta', 'gamma', parameter.var_device)
+            out = tf.nn.batch_normalization(out, mean, var, beta, gamma, 1e-6)
 
         if parameter.rectifier:
             out = parameter.rectifier(out)
