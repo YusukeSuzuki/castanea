@@ -5,4 +5,5 @@ from .conv import *
 from .atrous import *
 from .linear import *
 from .parameter import *
+from .visualize import *
 
