@@ -1,6 +1,15 @@
 import tensorflow as tf
 from castanea.utils import device_or_none
 
+def bn_beta_gamma(target, beta_name=None, gamma_name=None, var_device=None):
+    """create beta,gamma variable for batch_normalization"""
+    with device_or_none(var_device):
+        return (
+            tf.get_variable(beta_name, shape=target.get_shape().as_list()[-1],
+                initializer=tf.zeros_initializer()), 
+            tf.get_variable(gamma_name, shape=target.get_shape().as_list()[-1],
+                initializer=tf.ones_initializer()) )
+
 def normalize_weight_for_conv2d(w, g_init=1.0, var_device='/cpu:0'):
     '''
     weight normalization for conv2d

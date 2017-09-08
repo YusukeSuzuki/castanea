@@ -4,12 +4,10 @@ from castanea.normalize import *
 from castanea.layers.parameter import LayerParameter
 from castanea.utils import device_or_none
 
-def conv2d(
-        x, kernel_height, kernel_width, out_channels,
-        strides=[1,1,1,1], parameter=None):
+def atrous_conv2d(x, kernel_height, kernel_width, rate, out_channels, parameter=None):
 
     paramter = parameter or LayerParameter()
-    var_scope_default_name = parameter.var_scope_default_name or 'conv2d'
+    var_scope_default_name = parameter.var_scope_default_name or 'atrous_conv2d'
 
     with tf.variable_scope(None, default_name=var_scope_default_name, reuse=None):
         x_shape = x.get_shape().as_list()
@@ -23,8 +21,7 @@ def conv2d(
         if parameter.with_weight_normalize:
             weight = normalize_weight_for_conv2d(weight, var_device=parameter.var_device)
 
-        out = tf.nn.conv2d(
-            x, weight, strides=strides, padding=parameter.padding)
+        out = tf.nn.atrous_conv2d(x, weight, rate, padding=parameter.padding)
 
         if paramter.with_bias:
             with device_or_none(parameter.var_device):
@@ -43,12 +40,11 @@ def conv2d(
 
         return out
 
-def conv2d_transpose(
-        x, kernel_height, kernel_width, out_channels,
-        strides=[1,2,2,1], parameter=None):
+def atrous_conv2d_transpose(
+        x, kernel_height, kernel_width, rate, out_channels, parameter=None):
 
     paramter = parameter or LayerParameter()
-    var_scope_default_name = parameter.var_scope_default_name or 'conv2d_transpose'
+    var_scope_default_name = parameter.var_scope_default_name or 'atrous_conv2d_transpose'
 
     with tf.variable_scope(None, default_name=var_scope_default_name, reuse=None):
         x_shape = x.get_shape().as_list()
@@ -62,9 +58,9 @@ def conv2d_transpose(
         if parameter.with_weight_normalize:
             weight = normalize_weight_for_conv2d_transpose(weight, var_device=parameter.var_device)
 
-        out = tf.nn.conv2d_transpose(
-            x, weight, [x_shape[0], x_shape[1] * strides[1], x_shape[2] * strides[2], out_channels],
-            strides=strides, padding=parameter.padding)
+        out = tf.nn.atrous_conv2d_transpose(
+            x, weight, [x_shape[0], x_shape[1], x_shape[2], out_channels], rate,
+            padding=parameter.padding)
 
         if paramter.with_bias:
             with device_or_none(parameter.var_device):
@@ -83,38 +79,5 @@ def conv2d_transpose(
 
         return out
 
-def separable_conv2d(
-        x, kernel_height, kernel_width, channel_multiplier, out_channels,
-        strides=[1,1,1,1], parameter=None):
 
-    paramter = parameter or LayerParameter()
-    var_scope_default_name = parameter.var_scope_default_name or 'separable_conv2d'
-
-    with tf.variable_scope(None, default_name=var_scope_default_name, reuse=None):
-        x_shape = x.get_shape().as_list()
-
-        with device_or_none(parameter.var_device):
-            depthwise_weight = tf.get_variable(
-                shape=[kernel_height, kernel_width, x_shape[3], channel_multiplier],
-                initializer=xavier_initializer_conv2d(x, kernel_height, kernel_width),
-                name='depthwise_weight')
-            pointwise_weight = tf.get_variable(
-                shape=[1, 1, shale[3] * channel_multiplier, out_channels],
-                initializer=tf.ones_initializer(),
-                name='pointwise_weight')
-
-        out = tf.nn.separable_conv2d(
-            x, depthwise_weight, pointwise_weight, strides, padding=parameter.padding)
-
-        if paramter.with_bias:
-            with device_or_none(parameter.var_device):
-                bias = tf.get_variable(
-                    shape=[out_channels], initializer=tf.zeros_initializer(), name='bias')
-
-            out = tf.nn.bias_add(out, bias)
-
-        if parameter.rectifier:
-            out = parameter.rectifier(out)
-
-        return out
 
