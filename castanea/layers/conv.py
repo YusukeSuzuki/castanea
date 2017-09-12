@@ -1,7 +1,7 @@
 import tensorflow as tf
 from castanea.initializers import xavier_initializer_conv2d, xavier_initializer_conv2d_transpose
 from castanea.normalize import *
-from castanea.layers.parameter import LayerParameter
+from castanea.layers.parameter import BatchNormalizationParameter, LayerParameter
 from castanea.utils import device_or_none
 
 def conv2d(
@@ -34,9 +34,10 @@ def conv2d(
             out = tf.nn.bias_add(out, bias)
 
         if paramter.with_batch_normalize:
-            mean, var = tf.nn.moments(out, [0,1,2])
-            beta, gamma = bn_beta_gamma(out,'beta', 'gamma', parameter.var_device)
-            out = tf.nn.batch_normalization(out, mean, var, beta, gamma, 1e-6)
+            reuse = False
+            if type(parameter.with_batch_normalize) is BatchNormalizationParameter:
+                reuse = parameter.with_weight_normalize. reuse
+            out = tf.layers.batch_normalization(out, training=parameter.training, reuse=reuse)
 
         if parameter.rectifier:
             out = parameter.rectifier(out)
@@ -74,9 +75,10 @@ def conv2d_transpose(
             out = tf.nn.bias_add(out, bias)
 
         if paramter.with_batch_normalize:
-            mean, var = tf.nn.moments(out, [0,1,2])
-            beta, gamma = bn_beta_gamma(out,'beta', 'gamma', parameter.var_device)
-            out = tf.nn.batch_normalization(out, mean, var, beta, gamma, 1e-6)
+            reuse = False
+            if type(parameter.with_batch_normalize) is BatchNormalizationParameter:
+                reuse = parameter.with_weight_normalize. reuse
+            out = tf.layers.batch_normalization(out, training=parameter.training, reuse=reuse)
 
         if parameter.rectifier:
             out = parameter.rectifier(out)
@@ -112,6 +114,12 @@ def separable_conv2d(
                     shape=[out_channels], initializer=tf.zeros_initializer(), name='bias')
 
             out = tf.nn.bias_add(out, bias)
+
+        if paramter.with_batch_normalize:
+            reuse = False
+            if type(parameter.with_batch_normalize) is BatchNormalizationParameter:
+                reuse = parameter.with_weight_normalize. reuse
+            out = tf.layers.batch_normalization(out, training=parameter.training, reuse=reuse)
 
         if parameter.rectifier:
             out = parameter.rectifier(out)

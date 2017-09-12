@@ -10,6 +10,11 @@ def bn_beta_gamma(target, beta_name=None, gamma_name=None, var_device=None):
             tf.get_variable(gamma_name, shape=target.get_shape().as_list()[-1],
                 initializer=tf.ones_initializer()) )
 
+def batch_normalization(x, parameters):
+    x = tf.layers.batch_normalization(
+        x, training=parameter.training, reuse=parameters.reuse)
+    return x
+
 def normalize_weight_for_conv2d(w, g_init=1.0, var_device='/cpu:0'):
     '''
     weight normalization for conv2d

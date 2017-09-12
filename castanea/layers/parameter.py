@@ -1,10 +1,15 @@
 import tensorflow as tf
 
+class BatchNormalizationParameter:
+    def __init__(self, reuse=False, training=False):
+        self.reuse = reuse
+        self.training = training
+
 class LayerParameter:
     def __init__(self,
-            padding='SAME', with_bias=False, with_weight_normalize=False, rectifier=None,
-            with_batch_normalize=False, var_device=None, var_scope_default_name=None,
-            training=False):
+            padding='SAME', with_bias=False, rectifier=None,
+            with_weight_normalize=None, with_batch_normalize=None,
+            var_device=None, var_scope_default_name=None, training=False):
         self.padding = padding
         self.with_bias = with_bias
         self.with_weight_normalize = with_weight_normalize
