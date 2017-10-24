@@ -1,6 +1,6 @@
 import tensorflow as tf
 import numpy as np
-import castanea.model.downloader as downloader
+import castanea.models.downloader as downloader
 
 VGG16_NAME='vgg16'
 VGG16MAT_FILENAME='imagenet-vgg-verydeep-16.mat'
@@ -17,13 +17,13 @@ def _inference(image, vgg_mat, with_fc, training, trainable, reuse, name):
     x = image
     d = {}
 
-    with tf.variable_scope(name):
-        for i in range(len(vgg16_mat)):
-            layer_name = vgg16_mat[i][0][0][0][0]
-            layer_type = vgg16_mat[i][0][0][1][0]
+    with tf.variable_scope(name, reuse=reuse):
+        for i in range(len(vgg_mat)):
+            layer_name = vgg_mat[i][0][0][0][0]
+            layer_type = vgg_mat[i][0][0][1][0]
 
             if layer_type == 'conv':
-                kernel, bias = vgg16_mat[i][0][0][2][0]
+                kernel, bias = vgg_mat[i][0][0][2][0]
                 kernel = np.transpose(kernel, (1,0,2,3))
 
                 init = tf.constant_initializer(kernel, dtype=tf.float32)
@@ -42,7 +42,7 @@ def _inference(image, vgg_mat, with_fc, training, trainable, reuse, name):
             elif layer_type == 'relu':
                 d[layer_name] = x= tf.nn.relu(x)
             elif layer_type == 'pool':
-                pool_type = vgg16_mat[i][0][0][2][0]
+                pool_type = vgg_mat[i][0][0][2][0]
                 if pool_type == 'max':
                     d[layer_name] = x = tf.nn.max_pool(
                         x, ksize=[1,2,2,1], strides=[1,2,2,1], padding='SAME')
@@ -56,7 +56,7 @@ def inference(image, vgg_mat, training, trainable=False, reuse=False, name=VGG16
     x, d = _inference(image, vgg_mat, False, training, trainable, reuse, name)
     return x
 
-def inference_as_dict(image, training, trainable):
+def inference_as_dict(image, vgg_mat, training, trainable, reuse=False, name=VGG16_NAME):
     x, d = _inference(image, vgg_mat, False, training, trainable, reuse, name)
     return d
 

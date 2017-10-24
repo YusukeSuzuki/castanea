@@ -1,16 +1,15 @@
 from pathlib import Path
 import scipy.io as sio
+import sys
 
 def download_mat_file(filepath, fileurl):
-    filepath = Path(VGG16MAT_FILENAME)
-
-    if filepath.exists():
-        print('{} exists on local'.format(VGG16MAT_FILENAME), file=sys.stderr)
+    if Path(filepath).exists():
+        print('{} exists on local'.format(filepath), file=sys.stderr)
     else:
         print('{} not exists on local, download from {}'.format(
-            VGG16MAT_FILENAME, VGG16MAT_URL), file=sys.stderr)
+            filepath, fileurl), file=sys.stderr)
 
-        with urllib.request.urlopen(VGG16MAT_URL) as response, open(VGG16MAT_FILENAME, 'wb') as f:
+        with urllib.request.urlopen(fileurl) as response, open(filepath, 'wb') as f:
             shutil.copyfileobj(response, f)
     
     x = sio.loadmat(filepath)

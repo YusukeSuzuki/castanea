@@ -35,6 +35,12 @@ def linear(x, shape, parameter=None):
 
             out = tf.nn.bias_add(out, bias)
 
+        if parameter.with_batch_normalize:
+            reuse = False
+            if type(parameter.with_batch_normalize) is BatchNormalizationParameter:
+                reuse = parameter.with_weight_normalize. reuse
+            out = tf.layers.batch_normalization(out, training=parameter.training, reuse=reuse)
+
         if parameter.rectifier:
             out = parameter.rectifier(out)
 

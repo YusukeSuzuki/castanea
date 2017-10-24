@@ -8,7 +8,7 @@ def conv2d(
         x, kernel_height, kernel_width, out_channels,
         strides=[1,1,1,1], parameter=None):
 
-    paramter = parameter or LayerParameter()
+    parameter = parameter or LayerParameter()
     var_scope_default_name = parameter.var_scope_default_name or 'conv2d'
 
     with tf.variable_scope(None, default_name=var_scope_default_name, reuse=None):
@@ -26,14 +26,14 @@ def conv2d(
         out = tf.nn.conv2d(
             x, weight, strides=strides, padding=parameter.padding)
 
-        if paramter.with_bias:
+        if parameter.with_bias:
             with device_or_none(parameter.var_device):
                 bias = tf.get_variable(
                     shape=[out_channels], initializer=tf.zeros_initializer(), name='bias')
 
             out = tf.nn.bias_add(out, bias)
 
-        if paramter.with_batch_normalize:
+        if parameter.with_batch_normalize:
             reuse = False
             if type(parameter.with_batch_normalize) is BatchNormalizationParameter:
                 reuse = parameter.with_weight_normalize. reuse
@@ -48,7 +48,7 @@ def conv2d_transpose(
         x, kernel_height, kernel_width, out_channels,
         strides=[1,2,2,1], parameter=None):
 
-    paramter = parameter or LayerParameter()
+    parameter = parameter or LayerParameter()
     var_scope_default_name = parameter.var_scope_default_name or 'conv2d_transpose'
 
     with tf.variable_scope(None, default_name=var_scope_default_name, reuse=None):
@@ -67,14 +67,14 @@ def conv2d_transpose(
             x, weight, [x_shape[0], x_shape[1] * strides[1], x_shape[2] * strides[2], out_channels],
             strides=strides, padding=parameter.padding)
 
-        if paramter.with_bias:
+        if parameter.with_bias:
             with device_or_none(parameter.var_device):
                 bias = tf.get_variable(
                     shape=[out_channels], initializer=tf.zeros_initializer(), name='bias')
 
             out = tf.nn.bias_add(out, bias)
 
-        if paramter.with_batch_normalize:
+        if parameter.with_batch_normalize:
             reuse = False
             if type(parameter.with_batch_normalize) is BatchNormalizationParameter:
                 reuse = parameter.with_weight_normalize. reuse
@@ -89,7 +89,7 @@ def separable_conv2d(
         x, kernel_height, kernel_width, channel_multiplier, out_channels,
         strides=[1,1,1,1], parameter=None):
 
-    paramter = parameter or LayerParameter()
+    parameter = parameter or LayerParameter()
     var_scope_default_name = parameter.var_scope_default_name or 'separable_conv2d'
 
     with tf.variable_scope(None, default_name=var_scope_default_name, reuse=None):
@@ -108,14 +108,14 @@ def separable_conv2d(
         out = tf.nn.separable_conv2d(
             x, depthwise_weight, pointwise_weight, strides, padding=parameter.padding)
 
-        if paramter.with_bias:
+        if parameter.with_bias:
             with device_or_none(parameter.var_device):
                 bias = tf.get_variable(
                     shape=[out_channels], initializer=tf.zeros_initializer(), name='bias')
 
             out = tf.nn.bias_add(out, bias)
 
-        if paramter.with_batch_normalize:
+        if parameter.with_batch_normalize:
             reuse = False
             if type(parameter.with_batch_normalize) is BatchNormalizationParameter:
                 reuse = parameter.with_weight_normalize. reuse
