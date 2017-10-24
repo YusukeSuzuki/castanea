@@ -4,7 +4,7 @@ from functools import reduce
 import tensorflow as tf
 from castanea.initializers import xavier_initializer_linear
 from castanea.normalize import *
-from castanea.layers.parameter import LayerParameter
+from castanea.layers.parameter import BatchNormalizationParameter, LayerParameter
 from castanea.utils import device_or_none
 
 def linear(x, shape, parameter=None):
